@@ -47,6 +47,8 @@ function! prettier#Autoformat(...) abort
   endif
 endfunction
 
+let s:cachedVersion = ''
+
 " Main prettier command
 function! prettier#Prettier(...) abort
   let l:execCmd = prettier#resolver#executable#getPath()
@@ -61,7 +63,15 @@ function! prettier#Prettier(...) abort
   let l:bufferConfig = getbufvar(bufnr('%'), 'prettier_ft_default_args', {})
   let l:config = extend(l:bufferConfig, l:overWrite)
 
+
   if l:execCmd != -1
+    if s:cachedVersion == ''
+      let l:version = prettier#job#runner#getVersion(l:execCmd)
+      let s:cachedVersion = l:version
+    endif
+
+    let l:useLegacy = matchstr(s:cachedVersion, '^2\.') ? 'true' : 'false'
+
     " TODO
     " => we should make sure we can resolve --range-start  and --range-end when required
     "    => when the above is required we should also update l:startSelection to '1' and l:endSelection to line('$')
@@ -69,7 +79,8 @@ function! prettier#Prettier(...) abort
           \ prettier#resolver#preset#resolve(l:config),
           \ l:partialFormatEnabled,
           \ l:startSelection, 
-          \ l:endSelection)
+          \ l:endSelection,
+          \ l:useLegacy)
 
     " close quickfix if it is opened
     call prettier#utils#quickfix#close()

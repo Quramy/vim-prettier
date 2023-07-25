@@ -19,6 +19,10 @@ function! prettier#job#runner#onError(errors) abort
   endif
 endfunction
 
+function! prettier#job#runner#getVersion(cmd) abort
+  return s:version(a:cmd)
+endfunction
+
 function! s:asyncFormat(cmd, startSelection, endSelection) abort
     if !s:isAsyncVim && !s:isNeoVim 
       call s:format(a:cmd, a:startSelection, a:endSelection)
@@ -60,4 +64,12 @@ function! s:format(cmd, startSelection, endSelection) abort
   endif
 
   call prettier#utils#buffer#replace(l:out, a:startSelection, a:endSelection)
+endfunction
+
+function! s:version(cmd) abort
+  let l:out = split(system(a:cmd." --version"), '\n')
+  if !len(l:out)
+    return ''
+  endif
+  return l:out[0]
 endfunction

@@ -135,6 +135,10 @@ let g:prettier#config#trailing_comma = get(g:,'prettier#config#trailing_comma', 
 " See more: https://prettier.io/docs/en/options.html#require-pragma
 let g:prettier#config#require_pragma=  get(g:, 'prettier#config#require_pragma', 'false')
 
+" whether to pass legacy CLI options for prettier 2.x
+" default: 'false'
+let g:prettier#config#use_legacy = get(g:, 'prettier#config#use_legacy', 'false')
+
 " synchronous by default
 command! -nargs=? -range=% Prettier call prettier#Prettier(g:prettier#exec_cmd_async, <line1>, <line2>, g:prettier#partial_format)
 

@@ -1,6 +1,6 @@
 " By default we will default to our internal
 " configuration settings for prettier
-function! prettier#resolver#config#resolve(config, hasSelection, start, end) abort
+function! prettier#resolver#config#resolve(config, hasSelection, start, end, useLegacy) abort
   " Allow params to be passed as json format
   " convert bellow usage of globals to a get function o the params defaulting to global
   " TODO: Use a list, filter() and join() to get a nicer list of args.
@@ -31,11 +31,13 @@ function! prettier#resolver#config#resolve(config, hasSelection, start, end) abo
           \ ' --require-pragma=' .
           \ get(a:config, 'requirePragma', g:prettier#config#require_pragma) .
           \ ' --end-of-line=' .
-          \ get(a:config, 'endOfLine', g:prettier#config#end_of_line) .
-          \ ' --loglevel error '.
-          \ ' --stdin '
+          \ get(a:config, 'endOfLine', g:prettier#config#end_of_line)
 
-  return l:cmd
+  if g:prettier#config#use_legacy != 'true' && a:useLegacy != 'true'
+    return l:cmd.' --log-level error '
+  else
+    return l:cmd.' --loglevel error '.'--stdin'
+  endif
 endfunction
 
 " Returns either '--range-start X --range-end Y' or an empty string.
